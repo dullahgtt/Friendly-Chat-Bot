@@ -16,6 +16,6 @@ def insult_generator():
 @app.route('/')
 def main():
     insult = insult_generator()
-    return flask.render_template('chat-bot.html', insult = insult)
+    return flask.render_template('index.html', insult = insult)
 
 app.run()
