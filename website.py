@@ -1,6 +1,10 @@
 import flask
+import os
 import requests
 import json
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 app = flask.Flask(__name__)
 
@@ -14,4 +18,4 @@ def main():
     insult = insult_generator()
     return flask.render_template('chat-bot.html', insult = insult)
 
-app.run(debug=True)
+app.run()
