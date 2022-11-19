@@ -9,6 +9,7 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
+#App Setup 
 app = flask.Flask(__name__)
 app.secret_key = 'SPREAD_HATE_NOT_LOVE'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -16,6 +17,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+#Database Setup 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(50), unique=True, nullable = False)
@@ -23,10 +25,25 @@ class User(db.Model):
     first_name = db.Column(db.String(100), nullable = False)
     last_name = db.Column(db.String(100), nullable = False)
 
+class Bot_Messages(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    recepient = db.Column(db.String(50), nullable = False)
+    message = db.Column(db.String(1000), nullable = False)
+
+class User_Messages(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    sender = db.Column(db.String(50), nullable = False)
+    recepient = db.Column(db.String(50), nullable = False)
+    message = db.Column(db.String(1000), nullable = False)
+
+with app.app_context():
+    db.create_all()
+
+#API
 def insult_generator():
     insult = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=text")
     return insult.text
-
+    
 @app.route('/')
 def login():
     return flask.render_template('login.html')
