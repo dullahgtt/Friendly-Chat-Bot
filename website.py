@@ -43,9 +43,7 @@ with app.app_context():
 def insult_generator():
     insult = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=text")
     return insult.text
-
-
-#Routing 
+    
 @app.route('/')
 def login():
     return flask.render_template('login.html')
@@ -64,7 +62,8 @@ def login_check():
 
 @app.route('/home')
 def home():
+    username = ""
     insult = insult_generator()
-    return flask.render_template('index.html', insult = insult)
+    return flask.render_template('index.html', insult = insult, username = username)
 
 app.run()
