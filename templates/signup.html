@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            
+        </style>
+    </head>
+
+    <body>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class=flashes>
+          {% for message in messages %}
+            <h1 style="color:red"><b>{{ message }}</b></h1>
+          {% endfor %}
+          </ul>
+        {% endif %}
+        {% endwith %}
+
+        <h1>Sign Up</h1>
+
+        <form method="POST" action="/signup/check">
+            <input type="text" name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="Password">
+            <input type="submit" value="Submit">
+        </form>
+
+        <h5><a href="{{url_for('login')}}">Log In</a></h5>
+
+    </body>
+
+
+
+
+
+</html>
