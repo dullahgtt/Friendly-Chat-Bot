@@ -1,4 +1,4 @@
-import flask
+from flask import redirect, url_for, flask, flash
 import os
 import requests
 import json
@@ -54,11 +54,11 @@ def signup():
 
 @app.route('/signup/check', methods = ["GET", "POST"])
 def signup_check():
-    return 
+    return redirect(url_for('login'))
 
 @app.route('/login/check', methods = ["GET", "POST"])
 def login_check():
-    return
+    return redirect(url_for('signup'))
 
 @app.route('/home')
 def home():
