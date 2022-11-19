@@ -46,7 +46,8 @@ def login_check():
 
 @app.route('/home')
 def home():
+    username = ""
     insult = insult_generator()
-    return flask.render_template('index.html', insult = insult)
+    return flask.render_template('index.html', insult = insult, username = username)
 
 app.run()
