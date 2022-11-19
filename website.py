@@ -27,7 +27,6 @@ def insult_generator():
     insult = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=text")
     return insult.text
 
-
 @app.route('/')
 def login():
     return flask.render_template('login.html')
