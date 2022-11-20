@@ -34,6 +34,7 @@ class User_Messages(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     sender = db.Column(db.String(50), nullable = False)
     recepient = db.Column(db.String(50), nullable = False)
+    
     message = db.Column(db.String(1000), nullable = False)
 
 class Insults(db.Model):
@@ -117,6 +118,7 @@ def login_check():
     if not user:
         flash("That Username Does Not Exist. Please Sign Up Or Try Another Username.")
         return redirect(url_for('signup'))
+
     if not check_password_hash(user.password, password):
         flash("Incorrect Password. Please Try Again.")
     
