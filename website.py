@@ -96,6 +96,7 @@ def signup_check():
     db.session.add(new_user)
     db.session.commit()
     
+    flash("You were signed up.")
     return redirect(url_for('login'))
 
 @app.route('/login/check', methods = ["GET", "POST"])
