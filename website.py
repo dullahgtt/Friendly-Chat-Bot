@@ -17,9 +17,6 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-#Current username var
-global curr_user
-
 #Database Setup 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key = True)
@@ -78,17 +75,21 @@ def signup_check():
     username = request.form.get("username")
     password = request.form.get("password")
     user = User.query.filter_by(username = username).first()
+    
+    if first_name == "" or last_name == "":
+        flash("Input A Valid Name. Please Try Again.")
+        return redirect(url_for('signup'))
 
-    if user:
-        flash("This Username Already Exists. Please Enter A New Username.")
+    if username == "":
+        flash("Input A Valid Username. Please Try Again.")
         return redirect(url_for('signup'))
     
     if password == "":
         flash("Input A Valid Password. Please Try Again.")
         return redirect(url_for('signup'))
-    
-    if first_name == "" or last_name == "":
-        flash("Input A Valid Name. Please Try Again.")
+
+    if user:
+        flash("This Username Already Exists. Please Enter A New Username.")
         return redirect(url_for('signup'))
                 
     new_user = User(username = username, password = generate_password_hash(password, method='sha256'), 
@@ -105,19 +106,26 @@ def login_check():
     password = request.form.get("password")
     user = User.query.filter_by(username = username).first()
 
+    if username == "":
+        flash("Input A Valid Username. Please Try Again.")
+        return redirect(url_for('signup'))
+    
+    if password == "":
+        flash("Input A Valid Password. Please Try Again.")
+        return redirect(url_for('signup'))
+
     if not user:
         flash("That Username Does Not Exist. Please Sign Up Or Try Another Username.")
         return redirect(url_for('signup'))
     if not check_password_hash(user.password, password):
         flash("Incorrect Password. Please Try Again.")
     
-    curr_user = username
     login_user(user)
     return redirect(url_for('home'))
 
 @app.route('/home')
 def home():
     insult = insult_generator()
-    return render_template('index.html', insult = insult, username = curr_user)
+    return render_template('chat-bot.html', insult = insult)
 
 app.run()
