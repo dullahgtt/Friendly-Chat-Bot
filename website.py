@@ -123,6 +123,25 @@ def login_check():
     login_user(user)
     return redirect(url_for('home'))
 
+@app.route('/insult_getter', methods = ["GET", "POST"])
+def get_insult():
+    insult = request.form.get("insult")
+    recipient_first_name = request.form.get("recipient")
+    user_first_name = User.query.filter_by(first_name = recipient_first_name).first()
+    
+    if user_first_name:
+        #This should search for insult by keyword in insult database. Have not put all the logic in yet. 
+         print()
+         
+    else:
+        redirect(url_for('insult_page'))
+
+    return
+
+@app.route('/insult_page')
+def choose_insult():
+    return render_template('choose-your-insult.html')
+    
 @app.route('/home')
 def home():
     insult = insult_generator()

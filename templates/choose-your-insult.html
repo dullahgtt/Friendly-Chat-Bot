@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head></head>
+
+    <style type="text/css">
+        body{text-align:center}
+    </style>
+
+    <body style="background-color:grey;">
+
+    <h1 style="border:black; border-width:5px; border-style:solid;">Make Others Feel Better </h1>
+
+    <div class="topnav">
+        <a href="chat-bot.html">
+            <button class= "btn btn-primary btn-lg">Home</button>
+        </a>
+        <a class="active" href="choose-your-insult.html">
+            <button class="btn btn-primary btn-lg">Make Others Feel Better</button>
+        </a>
+        <a href="#contact">Bs1</a>
+        <a href="#about">Bs2</a>
+      </div> 
+    
+    <h3> </h3>
+
+    <body style="background-color:grey;">
+        <form method="POST" action="/insult_getter">
+            <label for="insult">Choose Insult Keyword</label><br>
+            <input type="text" name="insult" placeholder="Insult"><br>
+            <label for="recipient">Desired Recipient Name</label><br>
+            <input type="text" name="recipient" placeholder="Recipient"><br>
+            <input type="submit" value="Submit">
+        </form>
+
+    </body>
+
+</html>

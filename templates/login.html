@@ -7,6 +7,11 @@
     </head>
 
     <body>
+
+      <style type="text/css">
+        body{text-align:center}
+    </style>
+    
         {% with messages = get_flashed_messages() %}
         {% if messages %}
           <ul class=flashes>
@@ -17,7 +22,10 @@
         {% endif %}
         {% endwith %}
 
-        <h1>Log In</h1>
+    <body style="background-color:grey;">
+
+        
+    <h1 style="border:black; border-width:5px; border-style:solid;">Log In </h1>
 
         <form method="POST" action="/login/check">
             <label for="username">Username</label><br>
