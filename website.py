@@ -9,7 +9,6 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
-
 #App Setup 
 app = Flask(__name__)
 app.secret_key = 'SPREAD_HATE_NOT_LOVE'
@@ -17,6 +16,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+#Current username var
+global curr_user
 
 #Database Setup 
 class User(db.Model, UserMixin):
@@ -37,15 +39,24 @@ class User_Messages(db.Model):
     recepient = db.Column(db.String(50), nullable = False)
     message = db.Column(db.String(1000), nullable = False)
 
+class Insults(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    insult = db.Column(db.String(1000), nullable = False)
+
 with app.app_context():
     db.create_all()
 
+#Stores all insults generated for easy retrieval 
+def insult_db_storer(insult):
+    new_insult = Insults(insult = insult)
+    db.session.add(new_insult)
+    db.session.commit()
 
 #API
 def insult_generator():
     insult = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=text")
+    insult_db_storer(insult)
     return insult.text
-
 
 #App Routing 
 @login_manager.user_loader
@@ -94,18 +105,18 @@ def login_check():
     user = User.query.filter_by(username = username).first()
 
     if not user:
-        flash("That username does not exist. Please sign up or try another username.")
+        flash("That Username Does Not Exist. Please Sign Up Or Try Another Username.")
         return redirect(url_for('signup'))
     if not check_password_hash(user.password, password):
-        flash("Incorrect password. Please try again.")
+        flash("Incorrect Password. Please Try Again.")
     
+    curr_user = username
     login_user(user)
     return redirect(url_for('home'))
 
 @app.route('/home')
 def home():
-    username = ""
     insult = insult_generator()
-    return render_template('index.html', insult = insult, username = username)
+    return render_template('index.html', insult = insult, username = curr_user)
 
 app.run()
