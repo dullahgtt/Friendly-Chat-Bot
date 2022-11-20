@@ -53,7 +53,7 @@ def insult_db_storer(insult):
 #API
 def insult_generator():
     insult = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=text")
-    insult_db_storer(insult)
+    insult_db_storer(insult.text)
     return insult.text
 
 #App Routing 
@@ -142,11 +142,23 @@ def get_insult():
 
 @app.route('/insult_page')
 def choose_insult():
-    return render_template('choose-your-insult.html')
+    return render_template('make-others-feel-better.html')
+
+@app.route('/messages-for-me')
+def messages_for_me():
+    return render_template('messages-for-me.html')
+
+@app.route('/users')
+def users():
+    return render_template('users.html')
+
+@app.route('/inspiration')
+def get_inspiration():
+    return render_template('inspiration.html')
     
 @app.route('/home')
 def home():
     insult = insult_generator()
-    return render_template('chat-bot.html', insult = insult)
+    return render_template('feel-better.html', insult = insult)
 
 app.run()
