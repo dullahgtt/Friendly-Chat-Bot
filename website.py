@@ -54,6 +54,38 @@ def signup():
 
 @app.route('/signup/check', methods = ["GET", "POST"])
 def signup_check():
+    if request.method == "POST":
+        first_name = request.form.get("first name")
+        last_name = request.form.get("last name")
+        username = request.form.get("username")
+        password = request.form.get("password")
+        user = User.query.filter_by(username = username).all()
+
+    if user:
+        flash("This Username Already Exists. Please Enter A New Username.")
+        
+        return flask.redirect(url_for('signup'))
+    
+    if password == "":
+        flash("Input A Valid Password. Please Try Again.")
+        
+        return flask.redirect(url_for('signup'))
+    
+    if first_name == "" or last_name == "":
+        flash("Input A Valid Name. Please Try Again.")
+        
+        return flask.redirect(url_for('signup'))
+                
+    auth_user = User(username = username)
+    auth_password = User(password = password)
+    auth_fname = User(first_name = first_name)
+    auth_lname = User(last_name = last_name)
+    db.session.add(auth_user)
+    db.session.add(auth_password)
+    db.session.add(auth_fname)
+    db.session.add(auth_lname)
+    db.session.commit()
+    
     return redirect(url_for('login'))
 
 @app.route('/login/check', methods = ["GET", "POST"])
