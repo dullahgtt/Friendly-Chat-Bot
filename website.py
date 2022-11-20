@@ -1,4 +1,4 @@
-from flask import redirect, url_for, flask, flash
+from flask import redirect, url_for, Flask, flash, render_template, request
 import os
 import requests
 import json
@@ -10,7 +10,7 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 #App Setup 
-app = flask.Flask(__name__)
+app = Flask(__name__)
 app.secret_key = 'SPREAD_HATE_NOT_LOVE'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 db = SQLAlchemy(app)
@@ -46,11 +46,11 @@ def insult_generator():
     
 @app.route('/')
 def login():
-    return flask.render_template('login.html')
+    return render_template('login.html')
 
 @app.route('/signup')
 def signup():
-    return flask.render_template('signup.html')
+    return render_template('signup.html')
 
 @app.route('/signup/check', methods = ["GET", "POST"])
 def signup_check():
@@ -64,6 +64,6 @@ def login_check():
 def home():
     username = ""
     insult = insult_generator()
-    return flask.render_template('index.html', insult = insult, username = username)
+    return render_template('index.html', insult = insult, username = username)
 
 app.run()
