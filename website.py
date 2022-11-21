@@ -146,9 +146,22 @@ def choose_insult():
 def messages_for_me():
     return render_template('messages-for-me.html')
 
+def get_users():
+    user_data = User.query.all()
+    all_names = []
+    i = 0
+    
+    for name in user_data:
+        all_names[i] = name.first_name + " " + name.last_name
+        i = i + 1
+    
+    return all_names
+        
 @app.route('/users')
 def users():
-    return render_template('users.html')
+    users = get_users()
+    size = len(users)
+    return render_template('users.html', users = users, size = size)
 
 @app.route('/inspiration')
 def get_inspiration():
