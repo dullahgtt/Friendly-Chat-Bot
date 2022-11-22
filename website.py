@@ -27,14 +27,13 @@ class User(db.Model, UserMixin):
 
 class Bot_Messages(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    recepient = db.Column(db.String(50), nullable = False)
+    recipient = db.Column(db.String(50), nullable = False)
     message = db.Column(db.String(1000), nullable = False)
 
 class User_Messages(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     sender = db.Column(db.String(50), nullable = False)
-    recepient = db.Column(db.String(50), nullable = False)
-    
+    recipient = db.Column(db.String(50), nullable = False)
     message = db.Column(db.String(1000), nullable = False)
 
 class Insults(db.Model):
@@ -146,7 +145,17 @@ def choose_insult():
 
 @app.route('/messages-for-me')
 def messages_for_me():
-    return render_template('messages-for-me.html')
+    bot_array = []
+    user_array = []
+    bot_data = Bot_Messages.query.filter_by(recipient = current_user.username)
+    user_data = User_Messages.query.filter_by(recipient = current_user.username)
+
+    for i in bot_data:
+        bot_array.append(i)
+    for i in user_data:
+        user_array.append(i)
+
+    return render_template('messages-for-me.html', bot_msgs = bot_array, user_msgs = user_array)
 
 @app.route('/users')
 def users():
