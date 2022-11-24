@@ -27,13 +27,13 @@ class User(db.Model, UserMixin):
 
 class Bot_Messages(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    recepient = db.Column(db.String(50), nullable = False)
+    recipient = db.Column(db.String(50), nullable = False)
     message = db.Column(db.String(1000), nullable = False)
 
 class User_Messages(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     sender = db.Column(db.String(50), nullable = False)
-    recepient = db.Column(db.String(50), nullable = False)
+    recipient = db.Column(db.String(50), nullable = False)
     message = db.Column(db.String(1000), nullable = False)
 
 class Insults(db.Model):
@@ -117,6 +117,7 @@ def login_check():
     if not user:
         flash("That Username Does Not Exist. Please Sign Up Or Try Another Username.")
         return redirect(url_for('signup'))
+
     if not check_password_hash(user.password, password):
         flash("Incorrect Password. Please Try Again.")
     
@@ -142,26 +143,27 @@ def get_insult():
 def choose_insult():
     return render_template('make-others-feel-better.html')
 
-@app.route('/messages-for-me')
+@app.route('/messages-for-me', methods = ["GET", "POST"])
 def messages_for_me():
-    return render_template('messages-for-me.html')
+    bot_array = []
+    user_array = []
+    bot_data = Bot_Messages.query.filter_by(recipient = current_user.username)
+    user_data = User_Messages.query.filter_by(recipient = current_user.username)
 
-def get_users():
-    user_data = User.query.all()
-    all_names = []
-    i = 0
-    
-    for name in user_data:
-        all_names[i] = name.first_name + " " + name.last_name
-        i = i + 1
-    
-    return all_names
-        
-@app.route('/users')
+    for i in bot_data:
+        bot_array.append(i)
+    for i in user_data:
+        user_array.append(i)
+
+    return render_template('messages-for-me.html', bot_msgs = bot_array, user_msgs = user_array)
+
+@app.route('/users', methods = ["GET", "POST"])
 def users():
-    users = get_users()
-    size = len(users)
-    return render_template('users.html', users = users, size = size)
+    user_array = []
+    user_data = User.query.all()
+    for i in user_data:
+        user_array.append(i)
+    return render_template('users.html', users = user_array, users = users, size = size)
 
 @app.route('/inspiration')
 def get_inspiration():
@@ -169,7 +171,15 @@ def get_inspiration():
     
 @app.route('/home')
 def home():
-    insult = insult_generator()
-    return render_template('feel-better.html', insult = insult)
+    return render_template('feel-better.html', msg = "")
+
+@app.route('/feel-better', methods = ["GET", "POST"])
+def feel_better():
+    msg = insult_generator()
+    insult_db_storer(msg)
+    bot_msg = Bot_Messages(recipient = current_user.username, message = msg)
+    db.session.add(bot_msg)
+    db.session.commit()
+    return render_template('feel-better.html', msg = msg)
 
 app.run()
