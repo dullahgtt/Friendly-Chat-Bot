@@ -163,7 +163,7 @@ def users():
     user_data = User.query.all()
     for i in user_data:
         user_array.append(i)
-    return render_template('users.html', users = user_array, users = users, size = size)
+    return render_template('users.html', users = user_array)
 
 @app.route('/inspiration')
 def get_inspiration():
