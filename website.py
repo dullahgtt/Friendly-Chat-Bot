@@ -143,7 +143,7 @@ def get_insult():
 def choose_insult():
     return render_template('make-others-feel-better.html')
 
-@app.route('/messages-for-me')
+@app.route('/messages-for-me', methods = ["GET", "POST"])
 def messages_for_me():
     bot_array = []
     user_array = []
@@ -157,7 +157,7 @@ def messages_for_me():
 
     return render_template('messages-for-me.html', bot_msgs = bot_array, user_msgs = user_array)
 
-@app.route('/users')
+@app.route('/users', methods = ["GET", "POST"])
 def users():
     user_array = []
     user_data = User.query.all()
@@ -171,7 +171,15 @@ def get_inspiration():
     
 @app.route('/home')
 def home():
-    insult = insult_generator()
-    return render_template('feel-better.html', insult = insult)
+    return render_template('feel-better.html', msg = "")
+
+@app.route('/feel-better', methods = ["GET", "POST"])
+def feel_better():
+    msg = insult_generator()
+    insult_db_storer(msg)
+    bot_msg = Bot_Messages(recipient = current_user.username, message = msg)
+    db.session.add(bot_msg)
+    db.session.commit()
+    return render_template('feel-better.html', msg = msg)
 
 app.run()

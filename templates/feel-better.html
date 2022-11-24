@@ -28,8 +28,16 @@
   </div> 
 
         <h2> </h2>
+        <form method="POST" action="/feel-better">
+            <input type="submit" value="Click For Happiness!">
+        </form>
+        <br>
 
-        <h2> {{insult}} </h2>
+        <h2> 
+            {% if msg != "" %}
+            {{msg}} 
+            {% endif %}
+        </h2>
 
     </body>
 
