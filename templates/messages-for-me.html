@@ -38,7 +38,7 @@
             </tr>
             {%for i in bot_msgs%}
             <tr>
-              <td>{{i}}</td>
+              <td>{{i.message}}</td>
             </tr>
             {% endfor %}
         </table>
@@ -49,7 +49,7 @@
             </tr>
             {%for i in user_msgs%}
             <tr>
-              <td>{{i}}</td>
+              <td>{{i.sender}}: {{i.message}}</td>
             </tr>
             {% endfor %}
         </table>
