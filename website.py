@@ -151,9 +151,9 @@ def messages_for_me():
     user_data = User_Messages.query.filter_by(recipient = current_user.username)
 
     for i in bot_data:
-        bot_array.append(i)
+        bot_array.append(i.message)
     for i in user_data:
-        user_array.append(i)
+        user_array.append(i.message)
 
     return render_template('messages-for-me.html', bot_msgs = bot_array, user_msgs = user_array)
 
