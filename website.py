@@ -51,9 +51,11 @@ def insult_db_storer(insult):
 
 #API
 def insult_generator():
-    insult = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=text")
-    insult_db_storer(insult.text)
-    return insult.text
+    response = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=json")
+    insult = response.json()
+    insult = insult['insult']
+    insult_db_storer(insult)
+    return insult
 
 #App Routing 
 @login_manager.user_loader
@@ -176,10 +178,17 @@ def home():
 @app.route('/feel-better', methods = ["GET", "POST"])
 def feel_better():
     msg = insult_generator()
-    insult_db_storer(msg)
-    bot_msg = Bot_Messages(recipient = current_user.username, message = msg)
-    db.session.add(bot_msg)
-    db.session.commit()
+    
+    bot_check = Bot_Messages.query.filter_by(recipient = current_user.username, message = msg)
+    if not bot_check:
+        bot_msg = Bot_Messages(recipient = current_user.username, message = msg)
+        db.session.add(bot_msg)
+        db.session.commit()
+
+    insult_check = Insults.query.filter_by(insult = msg)
+    if not insult_check:
+         insult_db_storer(msg)
+
     return render_template('feel-better.html', msg = msg)
 
 app.run()
