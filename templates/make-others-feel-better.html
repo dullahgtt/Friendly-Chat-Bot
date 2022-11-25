@@ -14,7 +14,7 @@
         <a href="/home">
             <button class= "btn btn-primary btn-lg">Feel Better</button>
         </a>
-        <a class="active" href="/insult_page">
+        <a class="active" href="/make-others-feel-better">
             <button class="btn btn-primary btn-lg">Make Others Feel Better</button>
         </a>
         <a href="/inspiration">
@@ -31,7 +31,18 @@
     <h3> </h3>
 
     <body style="background-color:grey;">
-        <form method="POST" action="/insult_getter">
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+            <h3 style="color:red"><b>{{ message }}</b></h3>
+        {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/send_msg">
             <label for="username">Who Would You Like to Message?</label><br>
             <input type="text" name="username" placeholder="Username"><br>
             <label for="message">Type Your Message Below</label><br>

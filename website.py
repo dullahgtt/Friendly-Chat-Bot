@@ -2,7 +2,9 @@ from flask import Flask, redirect, url_for, flash, render_template, request
 import os
 import requests
 import json
+import html 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import and_
 from flask_login import LoginManager, UserMixin, login_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv, find_dotenv
@@ -28,17 +30,17 @@ class User(db.Model, UserMixin):
 class Bot_Messages(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     recipient = db.Column(db.String(50), nullable = False)
-    message = db.Column(db.String(1000), nullable = False)
+    message = db.Column(db.String(10000), nullable = False)
 
 class User_Messages(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     sender = db.Column(db.String(50), nullable = False)
     recipient = db.Column(db.String(50), nullable = False)
-    message = db.Column(db.String(1000), nullable = False)
+    message = db.Column(db.String(10000), nullable = False)
 
 class Insults(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    insult = db.Column(db.String(1000), nullable = False)
+    insult = db.Column(db.String(10000), nullable = False)
 
 with app.app_context():
     db.create_all()
@@ -51,9 +53,8 @@ def insult_db_storer(insult):
 
 #API
 def insult_generator():
-    response = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=json")
-    insult = response.json()
-    insult = insult['insult']
+    response = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=text")
+    insult = html.unescape(response.text)
     insult_db_storer(insult)
     return insult
 
@@ -126,31 +127,31 @@ def login_check():
     login_user(user)
     return redirect(url_for('home'))
 
-@app.route('/insult_getter', methods = ["GET", "POST"])
-def get_insult():
-    insult = request.form.get("insult")
-    recipient_first_name = request.form.get("recipient")
-    user_first_name = User.query.filter_by(first_name = recipient_first_name).first()
+@app.route('/send_msg', methods = ["GET", "POST"])
+def send_msg():
+    recipient_name = request.form.get("username")
+    msg = request.form.get("message")
+    check = User.query.filter_by(username = recipient_name).first()
+    if not check:
+        flash("That username does not exist. Please see the users page for a list of website users.")
+        return redirect(url_for('make_others_feel_better'))
     
-    if user_first_name:
-        #This should search for insult by keyword in insult database. Have not put all the logic in yet. 
-         print()
-         
-    else:
-        redirect(url_for('insult_page'))
+    user_msg = User_Messages(sender = current_user.username, recipient = recipient_name, message = msg)
+    db.session.add(user_msg)
+    db.session.commit()
+    flash(f"{recipient_name} will see your message when he/she visits the website.")
+    return redirect(url_for('make_others_feel_better'))
 
-    return
-
-@app.route('/insult_page')
-def choose_insult():
+@app.route('/make-others-feel-better')
+def make_others_feel_better():
     return render_template('make-others-feel-better.html')
 
 @app.route('/messages-for-me', methods = ["GET", "POST"])
 def messages_for_me():
     bot_array = []
     user_array = []
-    bot_data = Bot_Messages.query.filter_by(recipient = current_user.username)
-    user_data = User_Messages.query.filter_by(recipient = current_user.username)
+    bot_data = Bot_Messages.query.filter_by(recipient = current_user.username).all()
+    user_data = User_Messages.query.filter_by(recipient = current_user.username).all()
 
     for i in bot_data:
         bot_array.append(i)
@@ -178,8 +179,8 @@ def home():
 @app.route('/feel-better', methods = ["GET", "POST"])
 def feel_better():
     msg = insult_generator()
-    
-    bot_check = Bot_Messages.query.filter_by(recipient = current_user.username, message = msg)
+
+    bot_check = Bot_Messages.query.filter_by(recipient = current_user.username, message = msg).first() 
     if not bot_check:
         bot_msg = Bot_Messages(recipient = current_user.username, message = msg)
         db.session.add(bot_msg)
