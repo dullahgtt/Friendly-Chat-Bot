@@ -14,7 +14,7 @@
         <a href="/home">
             <button class= "btn btn-primary btn-lg">Feel Better</button>
         </a>
-        <a href="/insult_page">
+        <a href="/make-others-feel-better">
             <button class="btn btn-primary btn-lg">Make Others Feel Better</button>
         </a>
         <a href="/inspiration">
@@ -36,18 +36,18 @@
             <tr>
               <th>All Messages From William</th>
             </tr>
-            {%for i in bot_msgs%}
+            {% for i in bot_msgs %}
             <tr>
               <td>{{i.message}}</td>
             </tr>
             {% endfor %}
         </table>
-
+        <br>
         <table class="center">
             <tr>
               <th>Messages For You</th>
             </tr>
-            {%for i in user_msgs%}
+            {% for i in user_msgs %}
             <tr>
               <td>{{i.sender}}: {{i.message}}</td>
             </tr>
