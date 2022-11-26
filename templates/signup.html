@@ -1,16 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <style>
-            
-        </style>
-    </head>
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'css/style.css') }}">
+  <head></head>
 
     <body>
-      <style type="text/css">
-        body{text-align:center}
-    </style>
-
         {% with messages = get_flashed_messages() %}
         {% if messages %}
           <ul class=flashes>
@@ -21,9 +14,7 @@
         {% endif %}
         {% endwith %}
 
-        <body style="background-color:grey;">
-
-        <h1 style="border:black; border-width:5px; border-style:solid;">Sign Up </h1>
+        <h1>Sign Up </h1>
 
 
         <form method="POST" action="/signup/check">
@@ -41,9 +32,5 @@
         <h5><a href="{{url_for('login')}}">Log In</a></h5>
 
     </body>
-
-
-
-
 
 </html>

@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/style.css') }}">
     <head></head>
 
-    <style type="text/css">
-        body{text-align:center}
-    </style>
+    <body>
 
-    <body style="background-color:grey;">
-
-    <h1 style="border:black; border-width:5px; border-style:solid;">Make Others Feel Better </h1>
+    <h1>Make Others Feel Better </h1>
 
     <div class="topnav">
         <a href="/home">
@@ -26,11 +23,12 @@
         <a href="/users">
             <button class="btn btn-primary btn-lg">Users</button>
         </a>
+        <a class="active" href="/profile">
+            <button class="btn btn-primary btn-lg">My Profile</button>
+        </a>
       </div> 
     
     <h3> </h3>
-
-    <body style="background-color:grey;">
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}

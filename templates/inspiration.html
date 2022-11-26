@@ -1,21 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/style.css') }}">
     <head></head>
 
-    <style type="text/css">
-        body{text-align:center}
-        .error {
-            color: red
-        }
-        .message {
-            color: black
-            font-size: 24px
-        }
-    </style>
 
-    <body style="background-color:grey;">
+    <body>
 
-    <h1 style="border:black; border-width:5px; border-style:solid;">Inspiration! </h1>
+    <h1>Inspiration! </h1>
 
     <div class="topnav">
         <a href="/home">
@@ -33,11 +24,12 @@
         <a href="/users">
             <button class="btn btn-primary btn-lg">Users</button>
         </a>
+        <a class="active" href="/profile">
+            <button class="btn btn-primary btn-lg">My Profile</button>
+        </a>
       </div> 
     
     <h3> </h3>
-
-    <body style="background-color:grey;">
 
     <form method="POST" action="/search_insults">
         <label for="insult_keyword">Insult Keyword Here</label><br>

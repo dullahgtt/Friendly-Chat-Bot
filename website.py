@@ -158,7 +158,7 @@ def send_msg():
     user_msg = User_Messages(sender = current_user.username, recipient = recipient_name, message = msg)
     db.session.add(user_msg)
     db.session.commit()
-    flash(f"{recipient_name} will see your message when he/she visits the website.")
+    flash(f"{recipient_name} will see your message when they visits the website.")
     return redirect(url_for('make_others_feel_better'))
 
 @app.route('/make-others-feel-better')
@@ -206,6 +206,10 @@ def possible_inspirations():
 @app.route('/inspiration')
 def get_inspiration():
     return render_template('inspiration.html')
+
+@app.route('/profile')
+def profile():
+    return render_template('account.html')
     
 @app.route('/home')
 def home():

@@ -1,0 +1,19 @@
+body {
+    text-align: center;
+    background-color:grey;
+}
+
+h1 {
+    border:black;
+    border-width:5px;
+    border-style:solid;
+}
+
+.error {
+    color: red;
+}
+
+.message {
+    color: black;
+    font-size: 24px;
+}
