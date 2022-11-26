@@ -123,6 +123,7 @@ def login_check():
 
     if not check_password_hash(user.password, password):
         flash("Incorrect Password. Please Try Again.")
+        return redirect(url_for('login'))
     
     login_user(user)
     return redirect(url_for('home'))
