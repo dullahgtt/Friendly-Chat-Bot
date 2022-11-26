@@ -4,7 +4,7 @@ import requests
 import json
 import html 
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, current_user, login_required
+from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv, find_dotenv
 
@@ -72,6 +72,12 @@ def login():
 def signup():
     return render_template('signup.html')
 
+@app.route('/logout', methods = ["GET", "POST"])
+def logout():
+    logout_user()
+    flash("You Have Been Logged Out")
+    return redirect(url_for('login'))
+    
 @app.route('/signup/check', methods = ["GET", "POST"])
 def signup_check():
     first_name = request.form.get("first name")
@@ -112,15 +118,15 @@ def login_check():
 
     if username == "":
         flash("Input A Valid Username. Please Try Again.")
-        return redirect(url_for('signup'))
+        return redirect(url_for('login'))
     
     if password == "":
         flash("Input A Valid Password. Please Try Again.")
-        return redirect(url_for('signup'))
+        return redirect(url_for('login'))
 
     if not user:
         flash("That Username Does Not Exist. Please Sign Up Or Try Another Username.")
-        return redirect(url_for('signup'))
+        return redirect(url_for('login'))
 
     if not check_password_hash(user.password, password):
         flash("Incorrect Password. Please Try Again.")
@@ -209,7 +215,10 @@ def get_inspiration():
 
 @app.route('/profile')
 def profile():
-    return render_template('account.html')
+    uname = current_user.username
+    fname = current_user.first_name 
+    lname = current_user.last_name 
+    return render_template('profile.html', username = uname, firstname = fname, lastname = lname)
     
 @app.route('/home')
 def home():
