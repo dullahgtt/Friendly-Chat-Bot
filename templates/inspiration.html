@@ -37,17 +37,15 @@
         <input type="submit" value="Submit"><br>
     </form>
 
-    <table class="center">
-        <tr>
-        <th>Possible Insults To Choose From:</th>
-        </tr>
-    </table>
+    <h3 class="center">
+        Possible Insults To Choose From:
+    </h3>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <ul class=flashes>
       {% for category, message in messages %}
-        <h1 class={{category}}><b>{{ message }}</b></h1>
+        <h3 class={{category}}><b>{{ message }}</b></h3>
       {% endfor %}
       </ul>
     {% endif %}
