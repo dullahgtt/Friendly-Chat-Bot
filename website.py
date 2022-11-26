@@ -124,6 +124,7 @@ def login_check():
 
     if not check_password_hash(user.password, password):
         flash("Incorrect Password. Please Try Again.")
+        return redirect(url_for('login'))
     
     login_user(user)
     return redirect(url_for('home'))
@@ -185,6 +186,22 @@ def users():
     for i in user_data:
         user_array.append(i)
     return render_template('users.html', users = user_array)
+
+#This function helps the get_inspiration function access the databases for possible 
+# insults based on inputs from users for relative "quotes".
+@app.route('/search_insults', methods = ["GET", "POST"])
+def possible_inspirations():
+    keyword = request.form.get("insult_keyword")
+    insults = Insults.query.filter(Insults.insult.contains(keyword)).all()
+    temp = 1 
+    if not insults:
+        flash("No Insult Was Found", 'error')
+        return redirect(url_for('get_inspiration'))
+    
+    for i in insults:
+        flash(f"{temp}. {i.insult}", 'message')
+        temp = temp + 1
+    return redirect(url_for('get_inspiration'))
 
 @app.route('/inspiration')
 def get_inspiration():
