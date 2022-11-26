@@ -4,6 +4,13 @@
 
     <style type="text/css">
         body{text-align:center}
+        .error {
+            color: red
+        }
+        .message {
+            color: black
+            font-size: 24px
+        }
     </style>
 
     <body style="background-color:grey;">
@@ -31,6 +38,28 @@
     <h3> </h3>
 
     <body style="background-color:grey;">
+
+    <form method="POST" action="/search_insults">
+        <label for="insult_keyword">Insult Keyword Here</label><br>
+        <input type="text" name="insult_keyword" placeholder="Keyword Here for Insults"><br>
+        <input type="submit" value="Submit"><br>
+    </form>
+
+    <table class="center">
+        <tr>
+        <th>Possible Insults To Choose From:</th>
+        </tr>
+    </table>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for category, message in messages %}
+        <h1 class={{category}}><b>{{ message }}</b></h1>
+      {% endfor %}
+      </ul>
+    {% endif %}
+    {% endwith %} 
 
     </body>
 
