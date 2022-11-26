@@ -4,7 +4,6 @@ import requests
 import json
 import html 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import and_
 from flask_login import LoginManager, UserMixin, login_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv, find_dotenv
@@ -45,11 +44,13 @@ class Insults(db.Model):
 with app.app_context():
     db.create_all()
 
-#Stores all insults generated for easy retrieval 
+#Stores all unique insults generated for easy retrieval 
 def insult_db_storer(insult):
-    new_insult = Insults(insult = insult)
-    db.session.add(new_insult)
-    db.session.commit()
+    check = Insults.query.filter_by(insult = insult).first()
+    if not check:
+        new_insult = Insults(insult = insult)
+        db.session.add(new_insult)
+        db.session.commit()
 
 #API
 def insult_generator():
@@ -131,10 +132,27 @@ def login_check():
 def send_msg():
     recipient_name = request.form.get("username")
     msg = request.form.get("message")
-    check = User.query.filter_by(username = recipient_name).first()
-    if not check:
+    approval = request.form.get("approval")
+
+    if recipient_name == "":
+        flash("Please enter a username and try again.")
+        return redirect(url_for('make_others_feel_better'))
+
+    if msg == "":
+        flash("Please enter a message and try again.")
+        return redirect(url_for('make_others_feel_better'))
+        
+    if approval is None:
+        flash("Please indicate if you want your message added.")
+        return redirect(url_for('make_others_feel_better'))
+    
+    user_check = User.query.filter_by(username = recipient_name).first()
+    if not user_check:
         flash("That username does not exist. Please see the users page for a list of website users.")
         return redirect(url_for('make_others_feel_better'))
+    
+    if approval == "Yes":
+        insult_db_storer(msg)
     
     user_msg = User_Messages(sender = current_user.username, recipient = recipient_name, message = msg)
     db.session.add(user_msg)
@@ -185,10 +203,6 @@ def feel_better():
         bot_msg = Bot_Messages(recipient = current_user.username, message = msg)
         db.session.add(bot_msg)
         db.session.commit()
-
-    insult_check = Insults.query.filter_by(insult = msg)
-    if not insult_check:
-         insult_db_storer(msg)
 
     return render_template('feel-better.html', msg = msg)
 
