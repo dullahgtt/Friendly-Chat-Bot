@@ -209,7 +209,7 @@ def get_inspiration():
 
 @app.route('/profile')
 def profile():
-    return render_template('account.html')
+    return render_template('profile.html')
     
 @app.route('/home')
 def home():
