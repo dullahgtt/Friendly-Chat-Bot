@@ -12,7 +12,21 @@ h1 {
     color: transparent;
     background-clip: text;
     -webkit-background-clip: text;
-  }
+}
+
+.special_care, textarea {
+    background-color: #cd91c0;
+}
+
+#footer {
+    text-align: justify;
+    position: absolute;
+    bottom: 0;
+}
+
+#footer a {
+    font-size:19px
+}
 
 table {
     border:1px solid black;
