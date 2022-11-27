@@ -2,6 +2,7 @@ from flask import Flask, redirect, url_for, flash, render_template, request
 import os
 import requests
 import json
+import random
 import html 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
@@ -17,6 +18,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+button_msgs = ["Click For Happiness!", 
+               "Positivity Awaits!", 
+               "Feel Loved!", 
+               "Brighten Your Day!", 
+               "This Click Will Change Your Life!", 
+               "Find Joy!", 
+               "Press The Therapeutic Button!"]
 
 #Database Setup 
 class User(db.Model, UserMixin):
@@ -43,6 +52,12 @@ class Insults(db.Model):
 
 with app.app_context():
     db.create_all()
+
+#Get a button message to display
+def get_button_msg():
+    size = len(button_msgs) - 1
+    r = random.randint(0, size)
+    return button_msgs[r]
 
 #Stores all unique insults generated for easy retrieval 
 def insult_db_storer(insult):
@@ -242,7 +257,7 @@ def profile():
     
 @app.route('/home')
 def home():
-    return render_template('feel-better.html', msg = "")
+    return render_template('feel-better.html', msg = "", button_msg = get_button_msg())
 
 @app.route('/feel-better', methods = ["GET", "POST"])
 def feel_better():
@@ -254,6 +269,6 @@ def feel_better():
         db.session.add(bot_msg)
         db.session.commit()
 
-    return render_template('feel-better.html', msg = msg)
+    return render_template('feel-better.html', msg = msg, button_msg = get_button_msg())
 
 app.run()
