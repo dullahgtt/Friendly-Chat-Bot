@@ -29,12 +29,24 @@
 
         <h2> </h2>
         <form method="POST" action="/feel-better">
+            <label for="why_feel_sad">William is a very caring bot. Share why you feel sad:</label><br>
+            <textarea id="special_care" name="why_feel_sad" placeholder="Why Do You Feel Sad?" rows="5" cols="37"></textarea><br>
             <input type="submit" value="{{button_msg}}">
         </form>
         <br>
 
-        <div class="heart-shape"></div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class=flashes>
+          {% for message in messages %}
+            <h5 style="color:red"><b>{{ message }}</b></h5>
+          {% endfor %}
+          </ul>
+        {% endif %}
+        {% endwith %}
 
+        <div class="heart-shape"></div>
+        <h3> {{this}} </h3>
         <h3>{{msg}}</h3>
 
     </body>

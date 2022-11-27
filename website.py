@@ -254,13 +254,16 @@ def profile():
     fname = current_user.first_name 
     lname = current_user.last_name 
     return render_template('profile.html', username = uname, firstname = fname, lastname = lname)
-    
-@app.route('/home')
-def home():
-    return render_template('feel-better.html', msg = "", button_msg = get_button_msg())
 
 @app.route('/feel-better', methods = ["GET", "POST"])
 def feel_better():
+    reason_for_sadness = request.form.get("why_feel_sad")
+    this = "Oh no! I am so sorry " + reason_for_sadness +  " happened to you... Here, have a cookie:"
+    
+    if reason_for_sadness == "" or reason_for_sadness.isspace():
+        flash("Input a reason so William knows how to help you!")
+        return redirect(url_for('home'))
+    
     msg = insult_generator()
 
     bot_check = Bot_Messages.query.filter_by(recipient = current_user.username, message = msg).first() 
@@ -269,6 +272,10 @@ def feel_better():
         db.session.add(bot_msg)
         db.session.commit()
 
-    return render_template('feel-better.html', msg = msg, button_msg = get_button_msg())
+    return render_template('feel-better.html', this = this, msg = msg, button_msg = get_button_msg())
+
+@app.route('/home')
+def home():
+    return render_template('feel-better.html', msg = "", button_msg = get_button_msg())
 
 app.run()
