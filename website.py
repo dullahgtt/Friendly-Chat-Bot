@@ -77,6 +77,26 @@ def logout():
     logout_user()
     flash("You Have Been Logged Out")
     return redirect(url_for('login'))
+
+@app.route('/delete-account', methods = ["GET", "POST"])
+def delete():
+    confirmation = request.form.get("username")
+    if confirmation == "":
+        flash("Please enter your username and try again")
+        return redirect(url_for('profile'))
+    if confirmation != current_user.username:
+        flash("Incorrect username. Please try again.")
+        return redirect(url_for('profile'))
+
+    user = User.query.filter_by(username = current_user.username).first()
+    bot_msgs = Bot_Messages.query.filter_by(recipient = current_user.username).all()
+    logout_user()
+    db.session.delete(user)
+    for i in bot_msgs:
+        db.session.delete(i)
+    db.session.commit()
+    flash("Your account has been deleted.")
+    return redirect(url_for('signup'))
     
 @app.route('/signup/check', methods = ["GET", "POST"])
 def signup_check():

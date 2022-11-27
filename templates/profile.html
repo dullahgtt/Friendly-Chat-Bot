@@ -28,6 +28,16 @@
             </a>
           </div> 
 
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+                <h3 style="color:red"><b>{{ message }}</b></h3>
+            {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+
           <br>
           <h3>Username: {{username}}</h3>
           <h3>First Name: {{firstname}}</h3>
@@ -35,6 +45,13 @@
           <br>
           <form method="POST" action="/logout">
             <input type="submit" value="Log Out">
+          </form>
+          <br>
+          <h4>Delete Account</h4>
+          <form method="POST" action="/delete-account">
+            <label for="username">Enter your username below to delete your account:</label><br>
+            <input type="text" name="username" placeholder="Username"><br>
+            <input type="submit" value="Delete">
           </form>
 
     </body>
