@@ -1,13 +1,16 @@
 body {
     text-align: center;
-    background-color:grey;
+    background-color: rgb(214, 209, 201);
 }
 
 h1 {
-    border:black;
-    border-width:5px;
-    border-style:solid;
-}
+    font-size: 70px;
+    font-weight: 600;
+    background-image:  conic-gradient(#553c9a, #ee4b2b, #00c2cb);
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
 
 table {
     border:1px solid black;
@@ -25,7 +28,7 @@ table {
 }
 
 .topnav {
-    background-color: #333;
+    background-color: rgb(165, 150, 150);
     overflow: hidden;    
 }
     
@@ -44,6 +47,6 @@ table {
 }
     
 .topnav a.active {
-    background-color: #0f5c40;
+    background-color: #6dbea0;
     color: white;
 }
