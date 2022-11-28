@@ -220,6 +220,16 @@ def messages_for_me():
 
     return render_template('messages-for-me.html', bot_msgs = bot_array, user_msgs = user_array)
 
+@app.route('/messages-i-sent', methods=["GET", "POST"])
+def messages_i_sent():
+    user_array = []
+    user_data = User_Messages.query.filter_by(sender = current_user.username).all()
+
+    for i in user_data:
+        user_array.append(i)
+
+    return render_template('messages-i-sent.html', user_msgs = user_array)
+
 @app.route('/users', methods = ["GET", "POST"])
 def users():
     user_array = []
