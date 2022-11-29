@@ -27,7 +27,10 @@ button_msgs = ["Click For Happiness!",
                "Find Joy!", 
                "Press The Therapeutic Button!"]
 
+temp_fname = ""
+temp_lname = ""
 temp_username = ""
+temp_msg = ""
 
 #Database Setup 
 class User(db.Model, UserMixin):
@@ -87,7 +90,7 @@ def login():
 
 @app.route('/signup')
 def signup():
-    return render_template('signup.html')
+    return render_template('signup.html', fname = temp_fname, lname = temp_lname, uname = temp_username)
 
 @app.route('/logout', methods = ["GET", "POST"])
 def logout():
@@ -117,6 +120,9 @@ def delete():
     
 @app.route('/signup/check', methods = ["GET", "POST"])
 def signup_check():
+    global temp_fname
+    global temp_lname
+    global temp_username
     first_name = request.form.get("first name")
     last_name = request.form.get("last name")
     username = request.form.get("username")
@@ -129,21 +135,30 @@ def signup_check():
 
     if username == "":
         flash("Input A Valid Username. Please Try Again.")
+        temp_fname = first_name
+        temp_lname = last_name
+        return redirect(url_for('signup'))
+    
+    if user:
+        flash("This Username Already Exists. Please Enter A New Username.")
+        temp_fname = first_name
+        temp_lname = last_name
         return redirect(url_for('signup'))
     
     if password == "":
         flash("Input A Valid Password. Please Try Again.")
-        return redirect(url_for('signup'))
-
-    if user:
-        flash("This Username Already Exists. Please Enter A New Username.")
+        temp_fname = first_name
+        temp_lname = last_name
+        temp_username = username
         return redirect(url_for('signup'))
                 
     new_user = User(username = username, password = generate_password_hash(password, method='sha256'), 
                     first_name = first_name, last_name = last_name)
     db.session.add(new_user)
     db.session.commit()
-    
+    temp_fname = ""
+    temp_lname = ""
+    temp_username = username
     flash("You were signed up.")
     return redirect(url_for('login'))
 
@@ -178,12 +193,14 @@ def login_check():
 
 @app.route('/send_msg', methods = ["GET", "POST"])
 def send_msg():
+    global temp_msg
     recipient_name = request.form.get("username")
     msg = request.form.get("message")
     approval = request.form.get("approval")
 
     if recipient_name == "":
         flash("Please enter a username and try again.")
+        temp_msg = msg
         return redirect(url_for('make_others_feel_better'))
 
     if msg == "":
@@ -192,11 +209,13 @@ def send_msg():
         
     if approval is None:
         flash("Please indicate if you want your message added.")
+        temp_msg = msg
         return redirect(url_for('make_others_feel_better'))
     
     user_check = User.query.filter_by(username = recipient_name).first()
     if not user_check:
         flash("That username does not exist. Please see the users page for a list of website users.")
+        temp_msg = msg
         return redirect(url_for('make_others_feel_better'))
     
     if approval == "Yes":
@@ -205,12 +224,13 @@ def send_msg():
     user_msg = User_Messages(sender = current_user.username, recipient = recipient_name, message = msg)
     db.session.add(user_msg)
     db.session.commit()
-    flash(f"{recipient_name} will see your message when they visits the website.")
+    flash(f"{recipient_name} will see your message when they visit the website.")
+    temp_msg = ""
     return redirect(url_for('make_others_feel_better'))
 
 @app.route('/make-others-feel-better')
 def make_others_feel_better():
-    return render_template('make-others-feel-better.html')
+    return render_template('make-others-feel-better.html', umsg = temp_msg)
 
 @app.route('/messages-for-me', methods = ["GET", "POST"])
 def messages_for_me():
@@ -274,7 +294,7 @@ def profile():
 @app.route('/feel-better', methods = ["GET", "POST"])
 def feel_better():
     reason_for_sadness = request.form.get("why_feel_sad")
-    this = "Oh no! I am so sorry " + reason_for_sadness +  " happened to you... Here, have a cookie:"
+    this = "Oh no! I am so sorry '" + reason_for_sadness +  "' happened to you... Here, have a cookie:"
     
     if reason_for_sadness == "" or reason_for_sadness.isspace():
         flash("Input a reason so William knows how to help you!")
