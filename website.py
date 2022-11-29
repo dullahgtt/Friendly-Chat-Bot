@@ -27,10 +27,12 @@ button_msgs = ["Click For Happiness!",
                "Find Joy!", 
                "Press The Therapeutic Button!"]
 
+temp_username = ""
+
 #Database Setup 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String(50), unique=True, nullable = False)
+    username = db.Column(db.String(50), unique = True, nullable = False)
     password = db.Column(db.String(100), nullable = False)
     first_name = db.Column(db.String(100), nullable = False)
     last_name = db.Column(db.String(100), nullable = False)
@@ -81,7 +83,7 @@ def load_user(user_id):
 
 @app.route('/')
 def login():
-    return render_template('login.html')
+    return render_template('login.html', uname = temp_username)
 
 @app.route('/signup')
 def signup():
@@ -147,6 +149,7 @@ def signup_check():
 
 @app.route('/login/check', methods = ["GET", "POST"])
 def login_check():
+    global temp_username
     username = request.form.get("username")
     password = request.form.get("password")
     user = User.query.filter_by(username = username).first()
@@ -154,20 +157,23 @@ def login_check():
     if username == "":
         flash("Input A Valid Username. Please Try Again.")
         return redirect(url_for('login'))
-    
-    if password == "":
-        flash("Input A Valid Password. Please Try Again.")
-        return redirect(url_for('login'))
 
     if not user:
         flash("That Username Does Not Exist. Please Sign Up Or Try Another Username.")
         return redirect(url_for('login'))
+    
+    if password == "":
+        flash("Input A Valid Password. Please Try Again.")
+        temp_username = username
+        return redirect(url_for('login'))
 
     if not check_password_hash(user.password, password):
         flash("Incorrect Password. Please Try Again.")
+        temp_username = username
         return redirect(url_for('login'))
     
     login_user(user)
+    temp_username = ""
     return redirect(url_for('home'))
 
 @app.route('/send_msg', methods = ["GET", "POST"])
