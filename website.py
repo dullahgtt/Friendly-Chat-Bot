@@ -1,9 +1,9 @@
-from flask import Flask, redirect, url_for, flash, render_template, request
 import os
 import requests
-import json
 import random
-import html 
+import html
+import datetime
+from flask import Flask, redirect, url_for, flash, render_template, request 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -32,7 +32,7 @@ temp_lname = ""
 temp_username = ""
 temp_msg = ""
 
-#Database Setup 
+#Database Models 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(50), unique = True, nullable = False)
@@ -43,17 +43,19 @@ class User(db.Model, UserMixin):
 class Bot_Messages(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     recipient = db.Column(db.String(50), nullable = False)
-    message = db.Column(db.String(10000), nullable = False)
+    time = db.Column(db.String(50), nullable = False)
+    message = db.Column(db.String(50000), unique = True, nullable = False)
 
 class User_Messages(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     sender = db.Column(db.String(50), nullable = False)
     recipient = db.Column(db.String(50), nullable = False)
-    message = db.Column(db.String(10000), nullable = False)
+    time = db.Column(db.String(50), nullable = False)
+    message = db.Column(db.String(50000), nullable = False)
 
 class Insults(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    insult = db.Column(db.String(10000), nullable = False)
+    insult = db.Column(db.String(50000), unique = True, nullable = False)
 
 with app.app_context():
     db.create_all()
@@ -63,6 +65,12 @@ def get_button_msg():
     size = len(button_msgs) - 1
     r = random.randint(0, size)
     return button_msgs[r]
+
+#Get current date and time
+def get_time():
+    time_data = datetime.datetime.now()
+    timestamp = time_data.strftime("%x") + " at " + time_data.strftime("%X") + " (UTC)"
+    return timestamp
 
 #Stores all unique insults generated for easy retrieval 
 def insult_db_storer(insult):
@@ -79,11 +87,12 @@ def insult_generator():
     insult_db_storer(insult)
     return insult
 
-#App Routing 
+#For Flask Login  
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+#Standard app routes 
 @app.route('/')
 def login():
     return render_template('login.html', uname = temp_username)
@@ -92,32 +101,65 @@ def login():
 def signup():
     return render_template('signup.html', fname = temp_fname, lname = temp_lname, uname = temp_username)
 
-@app.route('/logout', methods = ["GET", "POST"])
-def logout():
-    logout_user()
-    flash("You Have Been Logged Out")
-    return redirect(url_for('login'))
+@app.route('/home')
+@login_required
+def home():
+    return render_template('feel-better.html', msg = "", button_msg = get_button_msg())
 
-@app.route('/delete-account', methods = ["GET", "POST"])
-def delete():
-    confirmation = request.form.get("username")
-    if confirmation == "":
-        flash("Please enter your username and try again")
-        return redirect(url_for('profile'))
-    if confirmation != current_user.username:
-        flash("Incorrect username. Please try again.")
-        return redirect(url_for('profile'))
+@app.route('/make-others-feel-better')
+@login_required
+def make_others_feel_better():
+    return render_template('make-others-feel-better.html', umsg = temp_msg)
 
-    user = User.query.filter_by(username = current_user.username).first()
-    bot_msgs = Bot_Messages.query.filter_by(recipient = current_user.username).all()
-    logout_user()
-    db.session.delete(user)
-    for i in bot_msgs:
-        db.session.delete(i)
-    db.session.commit()
-    flash("Your account has been deleted.")
-    return redirect(url_for('signup'))
-    
+@app.route('/inspiration')
+@login_required
+def get_inspiration():
+    return render_template('inspiration.html')
+
+@app.route('/messages-for-me', methods = ["GET", "POST"])
+@login_required
+def messages_for_me():
+    bot_array = []
+    user_array = []
+    bot_data = Bot_Messages.query.filter_by(recipient = current_user.username).all()
+    user_data = User_Messages.query.filter_by(recipient = current_user.username).all()
+
+    for i in bot_data:
+        bot_array.append(i)
+    for i in user_data:
+        user_array.append(i)
+
+    return render_template('messages-for-me.html', bot_msgs = bot_array, user_msgs = user_array)
+
+@app.route('/messages-i-sent', methods=["GET", "POST"])
+@login_required
+def messages_i_sent():
+    user_array = []
+    user_data = User_Messages.query.filter_by(sender = current_user.username).all()
+
+    for i in user_data:
+        user_array.append(i)
+
+    return render_template('messages-i-sent.html', user_msgs = user_array)
+
+@app.route('/users', methods = ["GET", "POST"])
+@login_required
+def users():
+    user_array = []
+    user_data = User.query.all()
+    for i in user_data:
+        user_array.append(i)
+    return render_template('users.html', users = user_array)
+
+@app.route('/profile')
+@login_required
+def profile():
+    uname = current_user.username
+    fname = current_user.first_name
+    lname = current_user.last_name
+    return render_template('profile.html', username = uname, firstname = fname, lastname = lname)
+
+#Routes that handle input   
 @app.route('/signup/check', methods = ["GET", "POST"])
 def signup_check():
     global temp_fname
@@ -191,6 +233,25 @@ def login_check():
     temp_username = ""
     return redirect(url_for('home'))
 
+@app.route('/feel-better', methods = ["GET", "POST"])
+def feel_better():
+    reason_for_sadness = request.form.get("why_feel_sad")
+    this = "Oh no! I am so sorry '" + reason_for_sadness +  "' happened to you... Here, have a cookie:"
+    
+    if reason_for_sadness == "" or reason_for_sadness.isspace():
+        flash("Input a reason so William knows how to help you!")
+        return redirect(url_for('home'))
+    
+    msg = insult_generator()
+
+    bot_check = Bot_Messages.query.filter_by(recipient = current_user.username, message = msg).first() 
+    if not bot_check:
+        bot_msg = Bot_Messages(recipient = current_user.username, time = get_time(), message = msg)
+        db.session.add(bot_msg)
+        db.session.commit()
+
+    return render_template('feel-better.html', this = this, msg = msg, button_msg = get_button_msg())
+
 @app.route('/send_msg', methods = ["GET", "POST"])
 def send_msg():
     global temp_msg
@@ -221,51 +282,13 @@ def send_msg():
     if approval == "Yes":
         insult_db_storer(msg)
     
-    user_msg = User_Messages(sender = current_user.username, recipient = recipient_name, message = msg)
+    user_msg = User_Messages(sender = current_user.username, recipient = recipient_name, time = get_time(), message = msg)
     db.session.add(user_msg)
     db.session.commit()
     flash(f"{recipient_name} will see your message when they visit the website.")
     temp_msg = ""
     return redirect(url_for('make_others_feel_better'))
 
-@app.route('/make-others-feel-better')
-def make_others_feel_better():
-    return render_template('make-others-feel-better.html', umsg = temp_msg)
-
-@app.route('/messages-for-me', methods = ["GET", "POST"])
-def messages_for_me():
-    bot_array = []
-    user_array = []
-    bot_data = Bot_Messages.query.filter_by(recipient = current_user.username).all()
-    user_data = User_Messages.query.filter_by(recipient = current_user.username).all()
-
-    for i in bot_data:
-        bot_array.append(i)
-    for i in user_data:
-        user_array.append(i)
-
-    return render_template('messages-for-me.html', bot_msgs = bot_array, user_msgs = user_array)
-
-@app.route('/messages-i-sent', methods=["GET", "POST"])
-def messages_i_sent():
-    user_array = []
-    user_data = User_Messages.query.filter_by(sender = current_user.username).all()
-
-    for i in user_data:
-        user_array.append(i)
-
-    return render_template('messages-i-sent.html', user_msgs = user_array)
-
-@app.route('/users', methods = ["GET", "POST"])
-def users():
-    user_array = []
-    user_data = User.query.all()
-    for i in user_data:
-        user_array.append(i)
-    return render_template('users.html', users = user_array)
-
-#This function helps the get_inspiration function access the databases for possible 
-# insults based on inputs from users for relative "quotes".
 @app.route('/search_insults', methods = ["GET", "POST"])
 def possible_inspirations():
     keyword = request.form.get("insult_keyword")
@@ -280,38 +303,30 @@ def possible_inspirations():
         temp = temp + 1
     return redirect(url_for('get_inspiration'))
 
-@app.route('/inspiration')
-def get_inspiration():
-    return render_template('inspiration.html')
+@app.route('/logout', methods = ["GET", "POST"])
+def logout():
+    logout_user()
+    flash("You Have Been Logged Out")
+    return redirect(url_for('login'))
 
-@app.route('/profile')
-def profile():
-    uname = current_user.username
-    fname = current_user.first_name 
-    lname = current_user.last_name 
-    return render_template('profile.html', username = uname, firstname = fname, lastname = lname)
+@app.route('/delete-account', methods = ["GET", "POST"])
+def delete():
+    confirmation = request.form.get("username")
+    if confirmation == "":
+        flash("Please enter your username and try again")
+        return redirect(url_for('profile'))
+    if confirmation != current_user.username:
+        flash("Incorrect username. Please try again.")
+        return redirect(url_for('profile'))
 
-@app.route('/feel-better', methods = ["GET", "POST"])
-def feel_better():
-    reason_for_sadness = request.form.get("why_feel_sad")
-    this = "Oh no! I am so sorry '" + reason_for_sadness +  "' happened to you... Here, have a cookie:"
-    
-    if reason_for_sadness == "" or reason_for_sadness.isspace():
-        flash("Input a reason so William knows how to help you!")
-        return redirect(url_for('home'))
-    
-    msg = insult_generator()
-
-    bot_check = Bot_Messages.query.filter_by(recipient = current_user.username, message = msg).first() 
-    if not bot_check:
-        bot_msg = Bot_Messages(recipient = current_user.username, message = msg)
-        db.session.add(bot_msg)
-        db.session.commit()
-
-    return render_template('feel-better.html', this = this, msg = msg, button_msg = get_button_msg())
-
-@app.route('/home')
-def home():
-    return render_template('feel-better.html', msg = "", button_msg = get_button_msg())
+    user = User.query.filter_by(username = current_user.username).first()
+    bot_msgs = Bot_Messages.query.filter_by(recipient = current_user.username).all()
+    logout_user()
+    db.session.delete(user)
+    for i in bot_msgs:
+        db.session.delete(i)
+    db.session.commit()
+    flash("Your account has been deleted.")
+    return redirect(url_for('signup'))
 
 app.run()
