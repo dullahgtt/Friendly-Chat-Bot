@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <link rel="stylesheet" href="{{ url_for('static', filename = 'css/style.css') }}">
-    <head></head>
+    <head>
+        <title>Messages I Sent</title>
+    </head>
 
     <body>
 
@@ -39,11 +41,11 @@
             </tr>
             {% for i in user_msgs %}
             <tr>
-              <td>To {{i.recipient}}: {{i.message}}</td>
+              <td><b>On {{i.time}} to {{i.recipient}}:</b> {{i.message}}</td>
             </tr>
             {% endfor %}
         </table>
-
+        <br> 
         <div id="navbar">
             <a href="/home" class="active">Home</a>
         </div> 

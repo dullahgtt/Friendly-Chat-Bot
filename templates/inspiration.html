@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <link rel="stylesheet" href="{{ url_for('static', filename = 'css/style.css') }}">
-    <head></head>
+    <head>
+        <title>Inspiration - Feel Better</title>
+    </head>
 
 
     <body>
@@ -36,8 +38,8 @@
 
     <form method="POST" action="/search_insults">
         <label for="insult_keyword">Insult Keyword Here</label><br>
-        <input type="text" name="insult_keyword" placeholder="Keyword Here for Insults"><br>
-        <input type="submit" value="Submit"><br>
+        <input type="text" name="insult_keyword" placeholder="Insult Keyword"><br><br> 
+        <input type="submit" value="Search"><br>
     </form>
 
     <h3 class="center">
