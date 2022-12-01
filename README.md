@@ -12,15 +12,15 @@
 
 ### Google Doc Link: https://docs.google.com/document/d/1IRv1r2RD1T1ofoR8zkSxV4njHHkGKeIrsY4qCOWHB5g/edit?usp=sharing 
 
-### fly.io Link: (TO ADD)
+### fly.io Link: https://feelbetter.fly.dev 
 
 ### Things Enjoyed/Learned:
 - Website concept is humorous 
-- (ADD)
+- Messages among users was fun to implement 
 
 ### Things Not Enjoyed/Learned:
 - Couldn't implement React (not enough time)
-- (ADD)
+- Accessing the database for the search feature in inspirations was a hassle and doesn't work as expected
 
 ### Technical Requirements:
 1. Flask server
