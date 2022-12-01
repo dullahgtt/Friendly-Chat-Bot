@@ -1,4 +1,4 @@
-# GitHub link: https://github.com/dullahgtt/Friendly-Chat-Bot
+## GitHub link: https://github.com/dullahgtt/Friendly-Chat-Bot
 
 ### Zaid's Pull Requests:
 - https://github.com/dullahgtt/Friendly-Chat-Bot/pull/8
@@ -20,7 +20,7 @@
 
 ### Things Not Enjoyed/Learned:
 - Couldn't implement React (not enough time)
-- Accessing the database for the search feature in inspirations was a hassle and doesn't work as expected
+- Accessing the database for the search feature in inspirations was a hassle and doesn't always work as expected
 
 ### Technical Requirements:
 1. Flask server
