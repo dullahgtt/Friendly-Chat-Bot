@@ -328,5 +328,3 @@ def delete():
     db.session.commit()
     flash("Your account has been deleted.")
     return redirect(url_for('signup'))
-
-app.run()
