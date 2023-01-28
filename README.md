@@ -14,14 +14,6 @@
 
 ### fly.io Link: https://feelbetter.fly.dev 
 
-### Things Enjoyed/Learned:
-- Website concept is humorous 
-- Messages among users was fun to implement 
-
-### Things Not Enjoyed/Learned:
-- Couldn't implement React (not enough time)
-- Accessing the database for the search feature in inspirations was a hassle and doesn't always work as expected
-
 ### Technical Requirements:
 1. Flask server
 2. Postgres database 
@@ -29,7 +21,8 @@
 4. REST API 
 
 ### Stretch Features:
-1. Logging in with password that is hashed (3xVhHVfV2gzjR3l)
-2. Sending direct messages to other users that are stored in database (1CwcKhuEy9pz7J0)
-3. Logging out and deleting account (AqiuIHejTxd9Q6f)
-4. Searching for message inspiration (2cdBLEqyAUdwgBA)
+1. Logging in with password that is hashed 
+2. Sending direct messages to other users that are stored in database 
+3. Logging out and deleting account 
+4. Searching for message inspiration 
+5. Form autosaves in case of input error in a field
